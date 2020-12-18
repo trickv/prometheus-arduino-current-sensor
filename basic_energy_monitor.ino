@@ -1,4 +1,10 @@
 #include "EmonLib.h"
+#include <SPI.h>
+#include <Ethernet.h>
+#include <ArduinoOTA.h>
+
+
+
 // Include Emon Library
 EnergyMonitor emon1;
 // Create an instance
