@@ -30,6 +30,27 @@ void setup()
 
 void loop()
 {
+    switch (Ethernet.maintain()) {
+        case 1: // renew failed
+            Serial.println("Ethernet error: renew failed");
+            break;
+        case 2: // renew success
+            Serial.println("Ethernet OK: DHCP renew success");
+            Serial.print("My IP address: ");
+            Serial.println(Ethernet.localIP());
+            break;
+        case 3: // rebind fail
+            Serial.println("Ethernet error: rebind fail");
+            break;
+        case 4: // rebind success
+            Serial.println("Ethernet OK: rebind success");
+            Serial.print("My IP address: ");
+            Serial.println(Ethernet.localIP());
+            break;
+        default: // nothing happened with the ethernet controller
+            break;
+        }
+
     double Irms = emon1.calcIrms(1480);  // Calculate Irms only
     Serial.print(Irms*230.0);           // Apparent power
     Serial.print(" ");
