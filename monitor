@@ -1,0 +1,2 @@
+picocom /dev/ttyACM0 -b 9600
+
