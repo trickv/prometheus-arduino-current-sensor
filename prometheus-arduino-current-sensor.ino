@@ -55,7 +55,7 @@ void listenForEthernetClients() {
 
 String metrics() {
     if (last_watts0 < 0 || last_amps0 < 0) {
-        return "no data";
+        return("HTTP/1.1 400 Not Ready\n");
     }
     String message = "";
     message += "HTTP/1.1 200 OK\n";
