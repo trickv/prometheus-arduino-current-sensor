@@ -1,6 +1,7 @@
 SKETCH=prometheus-arduino-current-sensor.ino
 
 upload:
+	killall picocom || true
 	arduino --board arduino:avr:uno --port /dev/ttyACM0 --upload ${SKETCH}
 
 verify:
