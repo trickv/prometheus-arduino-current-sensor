@@ -1,13 +1,117 @@
 #include "EmonLib.h"
 #include <SPI.h>
 #include <Ethernet.h>
-#include <ArduinoOTA.h>
 
+EnergyMonitor emon0;
 EnergyMonitor emon1;
+EnergyMonitor emon2;
+EnergyMonitor emon3;
+EnergyMonitor emon4;
+EthernetServer server(80);
 
 byte mac[] = {
   0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02
 };
+
+float last_watts0 = -1;
+float last_amps0 = -1;
+float last_watts1 = -1;
+float last_amps1 = -1;
+float last_watts2 = -1;
+float last_amps2 = -1;
+float last_watts3 = -1;
+float last_amps3 = -1;
+float last_watts4 = -1;
+float last_amps4 = -1;
+
+void listenForEthernetClients() {
+	// listen for incoming clients
+	EthernetClient client = server.available();
+	if (client) {
+		Serial.println("Got a client");
+		// an http request ends with a blank line
+		bool currentLineIsBlank = true;
+		while (client.connected()) {
+		    if (client.available()) {
+                char c = client.read();
+                if (c == '\n' && currentLineIsBlank) {
+                    client.print(metrics());
+                    break;
+                }
+                if (c == '\n') {
+                  // you're starting a new line
+                  currentLineIsBlank = true;
+                } else if (c != '\r') {
+                  // you've gotten a character on the current line
+                  currentLineIsBlank = false;
+                }
+            }
+        }
+    delay(1);
+    client.stop();
+  }
+}
+
+
+String metrics() {
+    if (last_watts0 < 0 || last_amps0 < 0) {
+        return "no data";
+    }
+    String message = "";
+    message += "HTTP/1.1 200 OK\n";
+    message += "Content-type: text/plain\n\n";
+    message += "# HELP sensor_watts Estimated watts from the sensor\n";
+    message += "# TYPE sensor_watts gauge\n";
+    message += "sensor_watts{sensor=0} ";
+    message += last_watts0;
+    message += "\n";
+    message += "# HELP sensor_amps Estimated amps from the sensor\n";
+    message += "# TYPE sensor_amps gauge\n";
+    message += "sensor_amps{sensor=0} ";
+    message += last_amps0;
+    message += "\n";
+    message += "# HELP sensor_watts Estimated watts from the sensor\n";
+    message += "# TYPE sensor_watts gauge\n";
+    message += "sensor_watts{sensor=1} ";
+    message += last_watts1;
+    message += "\n";
+    message += "# HELP sensor_amps Estimated amps from the sensor\n";
+    message += "# TYPE sensor_amps gauge\n";
+    message += "sensor_amps{sensor=1} ";
+    message += last_amps1;
+    message += "\n";
+    message += "# HELP sensor_watts Estimated watts from the sensor\n";
+    message += "# TYPE sensor_watts gauge\n";
+    message += "sensor_watts{sensor=2} ";
+    message += last_watts2;
+    message += "\n";
+    message += "# HELP sensor_amps Estimated amps from the sensor\n";
+    message += "# TYPE sensor_amps gauge\n";
+    message += "sensor_amps{sensor=2} ";
+    message += last_amps2;
+    message += "\n";
+    message += "# HELP sensor_watts Estimated watts from the sensor\n";
+    message += "# TYPE sensor_watts gauge\n";
+    message += "sensor_watts{sensor=3} ";
+    message += last_watts3;
+    message += "\n";
+    message += "# HELP sensor_amps Estimated amps from the sensor\n";
+    message += "# TYPE sensor_amps gauge\n";
+    message += "sensor_amps{sensor=3} ";
+    message += last_amps3;
+    message += "\n";
+    message += "# HELP sensor_watts Estimated watts from the sensor\n";
+    message += "# TYPE sensor_watts gauge\n";
+    message += "sensor_watts{sensor=4} ";
+    message += last_watts4;
+    message += "\n";
+    message += "# HELP sensor_amps Estimated amps from the sensor\n";
+    message += "# TYPE sensor_amps gauge\n";
+    message += "sensor_amps{sensor=4} ";
+    message += last_amps4;
+    message += "\n";
+    return(message);
+}
 
 void setup()
 {
@@ -25,7 +129,13 @@ void setup()
     Serial.print("My IP address: ");
     Serial.println(Ethernet.localIP());
 
+    server.begin();
+
+    emon0.current(0, 111.1);             // Current: input pin, calibration.
     emon1.current(1, 111.1);             // Current: input pin, calibration.
+    emon2.current(2, 111.1);             // Current: input pin, calibration.
+    emon3.current(3, 111.1);             // Current: input pin, calibration.
+    emon4.current(4, 111.1);             // Current: input pin, calibration.
 }
 
 void loop()
@@ -51,9 +161,42 @@ void loop()
             break;
         }
 
-    double Irms = emon1.calcIrms(1480);  // Calculate Irms only
+    double Irms;
+    Irms = emon0.calcIrms(1480);  // Calculate Irms only
     Serial.print(Irms*230.0);           // Apparent power
     Serial.print(" ");
     Serial.println(Irms);             // Irms
+    last_watts0 = Irms*230.0;
+    last_amps0 = Irms;
+    
+    Irms = emon1.calcIrms(1480);  // Calculate Irms only
+    Serial.print(Irms*230.0);           // Apparent power
+    Serial.print(" ");
+    Serial.println(Irms);             // Irms
+    last_watts1 = Irms*230.0;
+    last_amps1 = Irms;
+    
+    Irms = emon2.calcIrms(1480);  // Calculate Irms only
+    Serial.print(Irms*230.0);           // Apparent power
+    Serial.print(" ");
+    Serial.println(Irms);             // Irms
+    last_watts2 = Irms*230.0;
+    last_amps2 = Irms;
+    
+    Irms = emon3.calcIrms(1480);  // Calculate Irms only
+    Serial.print(Irms*230.0);           // Apparent power
+    Serial.print(" ");
+    Serial.println(Irms);             // Irms
+    last_watts3 = Irms*230.0;
+    last_amps3 = Irms;
+    
+    Irms = emon4.calcIrms(1480);  // Calculate Irms only
+    Serial.print(Irms*230.0);           // Apparent power
+    Serial.print(" ");
+    Serial.println(Irms);             // Irms
+    last_watts4 = Irms*230.0;
+    last_amps4 = Irms;
+
+    listenForEthernetClients();
 }
 
