@@ -125,18 +125,20 @@ void loop()
         }
 
     double Irms;
-    Irms = emon0.calcIrms(1480);  // Calculate Irms only
-    Serial.print(Irms*230.0);           // Apparent power
+    float voltage =120.0;
+    int sample_factor = 1676;
+    Irms = emon0.calcIrms(sample_factor);  // Calculate Irms only
+    Serial.print(Irms*voltage);           // Apparent power
     Serial.print(" ");
     Serial.println(Irms);             // Irms
-    last_watts0 = Irms*230.0;
+    last_watts0 = Irms*voltage;
     last_amps0 = Irms;
     
-    Irms = emon1.calcIrms(1480);  // Calculate Irms only
-    Serial.print(Irms*230.0);           // Apparent power
+    Irms = emon1.calcIrms(sample_factor);  // Calculate Irms only
+    Serial.print(Irms*voltage);           // Apparent power
     Serial.print(" ");
     Serial.println(Irms);             // Irms
-    last_watts1 = Irms*230.0;
+    last_watts1 = Irms*voltage;
     last_amps1 = Irms;
     
 
