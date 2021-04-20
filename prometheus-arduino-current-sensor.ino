@@ -125,7 +125,7 @@ void loop()
         }
 
     double Irms;
-    float voltage =120.0;
+    float voltage = 120.0;
     int sample_factor = 1676;
     Irms = emon0.calcIrms(sample_factor);  // Calculate Irms only
     Serial.print(Irms*voltage);           // Apparent power
