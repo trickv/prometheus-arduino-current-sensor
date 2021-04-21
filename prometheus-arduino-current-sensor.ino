@@ -97,8 +97,9 @@ void setup()
 
     server.begin();
 
-    emon0.current(0, 111.1);             // Current: input pin, calibration.
-    emon1.current(1, 111.1);             // Current: input pin, calibration.
+    float calibration_const = 90.9;
+    emon0.current(0, calibration_const);             // Current: input pin, calibration.
+    emon1.current(1, calibration_const);             // Current: input pin, calibration.
 }
 
 void loop()
