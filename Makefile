@@ -9,3 +9,6 @@ verify:
 
 serialmonitor:
 	picocom /dev/ttyACM0 -b 9600
+
+fetch:
+	curl 172.16.17.60
