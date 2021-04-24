@@ -35,7 +35,8 @@ void listenForEthernetClients() {
 		    if (client.available()) {
                 char c = client.read();
                 if (c == '\n' && currentLineIsBlank) {
-                    client.print(metrics());
+                    client.print(metrics_simple());
+                    client.print(metrics_experiment());
                     break;
                 }
                 if (c == '\n') {
@@ -53,7 +54,7 @@ void listenForEthernetClients() {
 }
 
 
-String metrics() {
+String metrics_simple() {
     if (last_watts0 < 0 || last_amps0 < 0) {
         return("HTTP/1.1 400 Not Ready\n");
     }
@@ -75,6 +76,16 @@ String metrics() {
     message += "\n";
     message += "sensor_amps{sensor=\"1\"} ";
     message += last_amps1;
+    message += "\n";
+    return(message);
+}
+
+String metrics_experiment() {
+    String message = "";
+    message += "# HELP sensor_micros output of micros function\n";
+    message += "# TYPE sensor_micros counter\n";
+    message += "power_sensor_micros ";
+    message += micros();
     message += "\n";
     return(message);
 }
