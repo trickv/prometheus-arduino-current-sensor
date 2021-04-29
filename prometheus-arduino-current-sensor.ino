@@ -13,6 +13,7 @@ byte mac[] = {
 unsigned long loop_count = 0;
 unsigned long previous_millis = -1;
 unsigned long last_loop_millis = -1;
+float total_amp_milliseconds0 = 0;
 float last_watts0 = -1;
 float last_amps0 = -1;
 unsigned long last_time0 = -1;
@@ -38,8 +39,9 @@ void listenForEthernetClients() {
                 char c = client.read();
                 if (c == '\n' && currentLineIsBlank) {
                     client.print(metrics_simple());
-                    client.print(metrics_experiment());
+//                    client.print(metrics_experiment());
                     client.print(metrics_experiment_2());
+                    client.print(metrics_cumulative());
                     break;
                 }
                 if (c == '\n') {
@@ -121,6 +123,12 @@ String metrics_experiment_2() {
     return(message);
 }
 
+String metrics_cumulative() {
+    String message = "";
+    message += make_metric_output("power_sensor_amp_milliseconds", "sensor=\"0\"", "gauge", String(total_amp_milliseconds0));
+    return(message);
+}
+
 void setup()
 {
     Serial.begin(9600);
@@ -184,6 +192,7 @@ void loop()
     last_watts0 = Irms*voltage;
     last_amps0 = Irms;
     last_time0 = millis() - start_time0;
+    total_amp_milliseconds0 += Irms / last_loop_millis;
     
     unsigned long start_time1 = millis();
     Irms = emon1.calcIrms(sample_factor);  // Calculate Irms only
