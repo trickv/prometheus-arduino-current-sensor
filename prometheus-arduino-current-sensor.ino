@@ -17,6 +17,7 @@ float total_amp_milliseconds0 = 0;
 float last_watts0 = -1;
 float last_amps0 = -1;
 unsigned long last_time0 = -1;
+float total_amp_milliseconds1 = 0;
 float last_watts1 = -1;
 float last_amps1 = -1;
 unsigned long last_time1 = -1;
@@ -126,6 +127,7 @@ String metrics_experiment_2() {
 String metrics_cumulative() {
     String message = "";
     message += make_metric_output("power_sensor_amp_milliseconds", "sensor=\"0\"", "gauge", String(total_amp_milliseconds0));
+    message += make_metric_output("power_sensor_amp_milliseconds", "sensor=\"1\"", "gauge", String(total_amp_milliseconds1));
     return(message);
 }
 
@@ -202,6 +204,7 @@ void loop()
     last_watts1 = Irms*voltage;
     last_amps1 = Irms;
     last_time1 = millis() - start_time1;
+    total_amp_milliseconds1 += Irms / last_loop_millis;
     
 
     listenForEthernetClients();
