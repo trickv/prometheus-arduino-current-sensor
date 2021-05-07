@@ -14,10 +14,12 @@ unsigned long loop_count = 0;
 unsigned long previous_millis = -1;
 unsigned long last_loop_millis = -1;
 float total_amp_milliseconds0 = 0;
+double total_amp_hours0 = 0;
 float last_watts0 = -1;
 float last_amps0 = -1;
 unsigned long last_time0 = -1;
 float total_amp_milliseconds1 = 0;
+double total_amp_hours1 = 0;
 float last_watts1 = -1;
 float last_amps1 = -1;
 unsigned long last_time1 = -1;
@@ -42,7 +44,8 @@ void listenForEthernetClients() {
                     client.print(metrics_simple());
 //                    client.print(metrics_experiment());
                     client.print(metrics_experiment_2());
-                    client.print(metrics_cumulative());
+                    client.print(metrics_cumulative_amp_milliseconds());
+                    client.print(metrics_cumulative_amp_hours());
                     break;
                 }
                 if (c == '\n') {
@@ -124,10 +127,17 @@ String metrics_experiment_2() {
     return(message);
 }
 
-String metrics_cumulative() {
+String metrics_cumulative_amp_milliseconds() {
     String message = "";
     message += make_metric_output("power_sensor_amp_milliseconds", "sensor=\"0\"", "gauge", String(total_amp_milliseconds0));
     message += make_metric_output("power_sensor_amp_milliseconds", "sensor=\"1\"", "gauge", String(total_amp_milliseconds1));
+    return(message);
+}
+
+String metrics_cumulative_amp_hours() {
+    String message = "";
+    message += make_metric_output("power_sensor_amp_hours", "sensor=\"0\"", "gauge", String(total_amp_hours0, 8));
+    message += make_metric_output("power_sensor_amp_hours", "sensor=\"1\"", "gauge", String(total_amp_hours1, 8));
     return(message);
 }
 
@@ -195,6 +205,7 @@ void loop()
     last_amps0 = Irms;
     last_time0 = millis() - start_time0;
     total_amp_milliseconds0 += Irms / last_loop_millis;
+    total_amp_hours0 += Irms * ((last_loop_millis / (float) 1000) / (float) 3600);
     
     unsigned long start_time1 = millis();
     Irms = emon1.calcIrms(sample_factor);  // Calculate Irms only
@@ -205,6 +216,7 @@ void loop()
     last_amps1 = Irms;
     last_time1 = millis() - start_time1;
     total_amp_milliseconds1 += Irms / last_loop_millis;
+    total_amp_hours1 += Irms * ((last_loop_millis / (float) 1000) / (float) 3600);
     
 
     listenForEthernetClients();
